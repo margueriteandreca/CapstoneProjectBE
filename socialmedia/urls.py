@@ -8,3 +8,7 @@ urlpatterns = [
     path("user/<id>", views.show_user)
 ]
 
+# "createuser/" or "users/" - to create new user/profile
+# "createpost" or "posts/" - to add a new post 
+
+# /jwt/create/

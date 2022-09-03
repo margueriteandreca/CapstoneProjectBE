@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Post
+from .models import Post, Like
 from .serializers import PostSerializer
 
 # Create your views here.
@@ -35,3 +35,15 @@ def remain_logged_in(request):
 @api_view
 def show_user(request, id):
     pass
+
+
+# function to fetch user posts for feed
+# find current logged in user 
+# feed_users = user.following
+# feed_users.posts - render in order of publication_date 
+
+
+@api_view
+def increment_likes(request, id):
+    post = Post.objects.get(pk = id)
+    Like.create 

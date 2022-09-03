@@ -2,9 +2,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+from rest_framework.authtoken.models import Token
+
 # Create your models here.
 
-class Profile(models.Model):
+class User(AbstractUser):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=16, unique=True)
