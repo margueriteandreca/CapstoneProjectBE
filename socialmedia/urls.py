@@ -1,14 +1,12 @@
 from django.urls import path 
+from rest_framework.routers import SimpleRouter
 from . import views 
 
+
+router = SimpleRouter()
+router.register('posts', views.PostViewSet)
+
 urlpatterns = [
-    path("hello/", views.say_hello),
-    path("login/", views.login),
-    path("me/", views.remain_logged_in),
-    path("user/<id>", views.show_user)
+    *router.urls,
+    path("hello/", views.hello)
 ]
-
-# "createuser/" or "users/" - to create new user/profile
-# "createpost" or "posts/" - to add a new post 
-
-# /jwt/create/
