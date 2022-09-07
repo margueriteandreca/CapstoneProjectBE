@@ -13,7 +13,6 @@ from .models import Post, Like
 from .serializers import PostSerializer
 from socialmedia import serializers
 
-
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer

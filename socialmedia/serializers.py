@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Post, Like, Image
 
-# from accounts.serializers import UserSerializer
+from accounts.serializers import FeedUserSerializer
+from .models import Post, Like, Image
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -16,7 +16,6 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    # user = UserSerializer()
     likes = LikeSerializer(many=True)
     images = ImageSerializer(many=True)
 
@@ -31,6 +30,7 @@ class PostSerializer(serializers.ModelSerializer):
         return post.likes.count()
 
 class FeedPostSerializer(serializers.ModelSerializer):
+    user = FeedUserSerializer()
     likes = LikeSerializer(many=True)
     images = ImageSerializer(many=True)
 
@@ -38,7 +38,7 @@ class FeedPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'publication_datetime', 'likes', 'like_count', 'images']
+        fields = ['id', 'text', 'publication_datetime', 'likes', 'like_count', 'images', 'user']
 
     def get_like_count(self, post):
         return post.likes.count()

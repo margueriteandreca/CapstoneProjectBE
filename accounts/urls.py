@@ -9,8 +9,9 @@ router.register('users', views.UserViewSet)
 
 urlpatterns = [
     *router.urls,
-    path("feed/", views.user_feed)
+    path("feed/", views.user_feed),
     # path("login/", views.login),
     # path("me/", views.remain_logged_in),
-    # path("user/<id>", views.show_user)
+    path("profile/", views.user_profile),
+    path("profile/<pk>", views.user_profile)
 ]

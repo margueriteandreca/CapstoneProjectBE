@@ -4,8 +4,8 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     avatar = models.ImageField()
-    bio = models.TextField(max_length=160, blank=True)
-    bio_link = models.URLField(max_length=200)
+    bio = models.TextField(max_length=160, blank=True, null=True)
+    bio_link = models.URLField(max_length=200, blank=True, null=True)
     following = models.ManyToManyField(
         "self", 
         through = 'UserFollower',

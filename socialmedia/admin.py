@@ -20,6 +20,3 @@ class LikeAdmin(admin.ModelAdmin):
 class ReplyAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(UserFollower)
-class UserFollowerAdmin(admin.ModelAdmin):
-    pass
