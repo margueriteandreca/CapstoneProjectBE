@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['id', 'username', "bio", "bio_link", "avatar"]
+        fields = ["id", "first_name", "last_name", "username", "bio", "bio_link", "avatar", "following"]
 
 class FeedUserSerializer(serializers.ModelSerializer):
     # def get_posts(self, user): 

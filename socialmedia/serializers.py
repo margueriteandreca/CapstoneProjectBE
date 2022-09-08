@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import FeedUserSerializer
-from .models import Post, Like, Image
+from .models import Post, Like, Image, Reply
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -13,6 +13,12 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['id', 'user', 'post']
+
+
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = ['id', 'text' , 'user', 'post']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -33,6 +39,7 @@ class FeedPostSerializer(serializers.ModelSerializer):
     user = FeedUserSerializer()
     likes = LikeSerializer(many=True)
     images = ImageSerializer(many=True)
+    # replies = ReplySerializer(many=True)
 
     like_count = serializers.SerializerMethodField()
 
