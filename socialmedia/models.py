@@ -1,13 +1,15 @@
 from django.db import models
 from accounts.models import User
+from django.utils.timezone import now
 
 
 class Post(models.Model):
     text = models.CharField(max_length=255, null=True, blank=True)
     # image_content = models.CharField(max_length=255, null=True, blank=True)
-    publication_datetime = models.DateTimeField()
+    publication_datetime = models.DateTimeField(default=now, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_draft = models.BooleanField(default=False)
 
 
 class Image(models.Model):
@@ -25,8 +27,8 @@ class Like(models.Model):
 
 
 class Reply(models.Model):
-    text_content = models.CharField(max_length=255)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='replies')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

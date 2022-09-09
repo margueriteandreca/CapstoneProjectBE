@@ -9,6 +9,7 @@ from socialmedia.models import Post
 from .serializers import ProfileSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 
 from django.shortcuts import get_object_or_404
@@ -44,5 +45,21 @@ def user_profile(request, pk=None):
         "posts": post_serializer.data
         }
     ) 
-        
-    
+
+
+
+@api_view(http_method_names=['DELETE'])
+def delete_user(request):
+    user = request.user
+    user.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(http_method_names=['PATCH'])
+def edit_user(request): 
+    user = request.user
+    serializer = ProfileSerializer(user, request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,3 +1,5 @@
+from asyncore import read
+from email.policy import default
 from rest_framework import serializers
 
 from accounts.serializers import FeedUserSerializer
@@ -22,8 +24,8 @@ class ReplySerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    likes = LikeSerializer(many=True)
-    images = ImageSerializer(many=True)
+    likes = LikeSerializer(many=True, read_only=True, default=[])
+    images = ImageSerializer(many=True, read_only=True, default=[])
 
     # https://www.django-rest-framework.org/api-guide/fields/#serializermethodfield
     like_count = serializers.SerializerMethodField()
@@ -35,21 +37,33 @@ class PostSerializer(serializers.ModelSerializer):
     def get_like_count(self, post):
         return post.likes.count()
 
+class CreatePostSerializer(serializers.ModelSerializer):
+    likes = LikeSerializer(many=True, read_only=True, default=[])
+    images = ImageSerializer(many=True, read_only=True, default=[])
+
+    class Meta:
+        model = Post
+        fields = ['id', 'text', 'publication_datetime', 'likes', 'user', 'images', 'is_draft']
+
+    def create(self, validated_data):  
+        post = Post.objects.create(**validated_data)
+        return post
+
+
 class FeedPostSerializer(serializers.ModelSerializer):
     user = FeedUserSerializer()
     likes = LikeSerializer(many=True)
     images = ImageSerializer(many=True)
-    # replies = ReplySerializer(many=True)
+    replies = ReplySerializer(many=True)
 
     like_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'publication_datetime', 'likes', 'like_count', 'images', 'user']
+        fields = ['id', 'text', 'publication_datetime', 'likes', 'like_count', 'images', 'user', 'replies']
 
     def get_like_count(self, post):
         return post.likes.count()
-
 
 
 # class PostSerializer():
