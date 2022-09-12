@@ -27,8 +27,9 @@ def user_feed(request):
     following = request.user.following.all()
     following_ids = following.values_list('id', flat=True)
     posts = Post.objects.filter(user__id__in=following_ids)
-    serializer = FeedPostSerializer(posts.order_by("-publication_datetime"), many=True)
+    serializer = FeedPostSerializer(filter(lambda post: post.is_draft == False, posts.order_by("-publication_datetime")), many=True)
     return Response(serializer.data)
+
 
 @api_view(http_method_names=['GET'])
 def user_profile(request, pk=None):
@@ -37,7 +38,7 @@ def user_profile(request, pk=None):
     else:
         user_id = pk 
     posts = Post.objects.filter(user__id=user_id)
-    post_serializer = PostSerializer(posts.order_by("-publication_datetime"), many=True)
+    post_serializer = PostSerializer(filter(lambda post: post.is_draft == False, posts.order_by("-publication_datetime")), many=True)
     serializer = ProfileSerializer(User.objects.get(id=user_id))
     return Response(
         {
@@ -46,7 +47,12 @@ def user_profile(request, pk=None):
         }
     ) 
 
-
+@api_view(http_method_names=['GET'])
+def user_drafts(request):
+    user_id = request.user.id
+    posts = Post.objects.filter(user__id=user_id)
+    serializer = PostSerializer(filter(lambda post: post.is_draft == True, posts.order_by("-publication_datetime")), many=True)
+    return Response(serializer.data) 
 
 @api_view(http_method_names=['DELETE'])
 def delete_user(request):

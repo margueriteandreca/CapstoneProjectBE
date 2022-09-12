@@ -25,6 +25,7 @@ class CreatePost(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        # breakpoint()
         serializer = CreatePostSerializer(data={**request.data, "user": request.user.id })
         if serializer.is_valid():
             post = serializer.save()

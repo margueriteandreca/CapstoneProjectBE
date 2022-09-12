@@ -17,7 +17,7 @@ from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=700)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=700),
 }
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

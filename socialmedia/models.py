@@ -5,7 +5,6 @@ from django.utils.timezone import now
 
 class Post(models.Model):
     text = models.CharField(max_length=255, null=True, blank=True)
-    # image_content = models.CharField(max_length=255, null=True, blank=True)
     publication_datetime = models.DateTimeField(default=now, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -2,7 +2,7 @@ from asyncore import read
 from email.policy import default
 from rest_framework import serializers
 
-from accounts.serializers import FeedUserSerializer
+from accounts.serializers import FeedUserSerializer, UserSerializer
 from .models import Post, Like, Image, Reply
 
 
@@ -18,6 +18,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class ReplySerializer(serializers.ModelSerializer):
+    user = FeedUserSerializer()
     class Meta:
         model = Reply
         fields = ['id', 'text' , 'user', 'post']
@@ -43,7 +44,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'publication_datetime', 'likes', 'user', 'images', 'is_draft']
+        fields = ["id", "text", "publication_datetime", "likes", "user", "images", "is_draft"]
 
     def create(self, validated_data):  
         post = Post.objects.create(**validated_data)
@@ -55,6 +56,8 @@ class FeedPostSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True)
     images = ImageSerializer(many=True)
     replies = ReplySerializer(many=True)
+    # reply_user = UserSerializer()
+
 
     like_count = serializers.SerializerMethodField()
 
@@ -64,6 +67,9 @@ class FeedPostSerializer(serializers.ModelSerializer):
 
     def get_like_count(self, post):
         return post.likes.count()
+
+    # def get_reply_user(self, reply):
+    #     return reply.user
 
 
 # class PostSerializer():
