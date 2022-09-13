@@ -1,4 +1,5 @@
 # from django.shortcuts import render
+from ast import For
 from re import I
 from django.shortcuts import get_object_or_404
 # from django.http import HttpResponse
@@ -13,7 +14,7 @@ from rest_framework import status
 
 from accounts.models import User, UserFollower
 from .models import Post, Like, Reply, Image
-from .serializers import LikeSerializer, PostSerializer, CreatePostSerializer, ReplySerializer
+from .serializers import LikeSerializer, PostSerializer, CreatePostSerializer, CreateReplySerializer, UploadedBase64ImageSerializer
 from socialmedia import serializers
 
 class PostViewSet(ModelViewSet):
@@ -23,16 +24,21 @@ class PostViewSet(ModelViewSet):
 
 class CreatePost(APIView):
     permission_classes = [IsAuthenticated]
+    # parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, format=None):
-        # breakpoint()
         serializer = CreatePostSerializer(data={**request.data, "user": request.user.id })
         if serializer.is_valid():
             post = serializer.save()
             if 'image' in request.data:
-                Image.objects.create(image=request.data['image'], post=post)
+                my_image = UploadedBase64ImageSerializer(data={"image": request.data['image']})
+                if my_image.is_valid():
+                    my_image.save(post=post)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, format=None):
+        pass
 
 class LikeAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -56,7 +62,7 @@ class ReplyAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        serializer = ReplySerializer(data={**request.data, "user": request.user.id })
+        serializer = CreateReplySerializer(data={**request.data, "user": request.user.id })
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -77,40 +83,4 @@ def hello(request):
             'user': {'id': request.user.id}
 
         }
-    )
-
-
-
-
-# @api_view
-# def all_products(request):
-#     queryset = Post.objects.all()
-#     serializer = PostSerializer(queryset, many=True)
-#     return Response(serializer.data)
-
-
-# @api_view
-# def login(request):
-#     pass
-
-# @api_view 
-# def remain_logged_in(request):
-#     pass
-
-
-# @api_view
-# def show_user(request, id):
-#     pass
-
-
-# # function to fetch user posts for feed
-# # find current logged in user 
-# # feed_users = user.following
-# # feed_users.posts - render in order of publication_date 
-
-
-# @api_view
-# def increment_likes(request, id):
-#     user = "??"
-#     post = Post.objects.get(pk = id)
-#     Like.create(user = user, post = post)
+    ) 

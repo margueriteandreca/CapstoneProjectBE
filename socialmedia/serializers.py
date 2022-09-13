@@ -5,11 +5,24 @@ from rest_framework import serializers
 from accounts.serializers import FeedUserSerializer, UserSerializer
 from .models import Post, Like, Image, Reply
 
+from drf_extra_fields.fields import Base64ImageField
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ['post', 'id', 'image']
+
+class UploadedBase64ImageSerializer(serializers.Serializer):
+    image = Base64ImageField(required=False)
+
+    class Meta:
+        model = Image
+        fields = ['post', 'id', 'image']
+
+    def create(self, validated_data):  
+        image = Image.objects.create(**validated_data)
+        return image
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,6 +32,11 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class ReplySerializer(serializers.ModelSerializer):
     user = FeedUserSerializer()
+    class Meta:
+        model = Reply
+        fields = ['id', 'text' , 'user', 'post']
+
+class CreateReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = ['id', 'text' , 'user', 'post']
@@ -40,11 +58,11 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CreatePostSerializer(serializers.ModelSerializer):
     likes = LikeSerializer(many=True, read_only=True, default=[])
-    images = ImageSerializer(many=True, read_only=True, default=[])
+    # images = UploadedBase64ImageSerializer(many=True, read_only=True, default=[])
 
     class Meta:
         model = Post
-        fields = ["id", "text", "publication_datetime", "likes", "user", "images", "is_draft"]
+        fields = ["id", "text", "publication_datetime", "likes", "user", "is_draft"]
 
     def create(self, validated_data):  
         post = Post.objects.create(**validated_data)
