@@ -1,5 +1,6 @@
 # from django.shortcuts import render
 from ast import For
+from functools import partial
 from re import I
 from django.shortcuts import get_object_or_404
 # from django.http import HttpResponse
@@ -24,7 +25,6 @@ class PostViewSet(ModelViewSet):
 
 class CreatePost(APIView):
     permission_classes = [IsAuthenticated]
-    # parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, format=None):
         serializer = CreatePostSerializer(data={**request.data, "user": request.user.id })
@@ -38,7 +38,23 @@ class CreatePost(APIView):
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, format=None):
-        pass
+        post = Post.objects.get(id=request.data["id"])
+        serializer = CreatePostSerializer(post, data={**request.data, "user": request.user.id }, partial=True)
+        if serializer.is_valid():
+            post = serializer.save()
+            if 'image' in request.data:
+                if post.images: 
+                    img = post.images[0]
+                    my_image = UploadedBase64ImageSerializer(img, data={"image": request.data['image']}, partial=True)
+                    if my_image.is_valid():
+                        my_image.save(post=post)
+                else: 
+                    my_image = UploadedBase64ImageSerializer(data={"image": request.data['image']})
+                    if my_image.is_valid():
+                        my_image.save(post=post)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class LikeAPI(APIView):
     permission_classes = [IsAuthenticated]
