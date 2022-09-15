@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from socialmedia.serializers import FeedPostSerializer, PostSerializer
 from .models import User
 from socialmedia.models import Post
-from .serializers import ProfileSerializer, UserSerializer
+from .serializers import ProfileSerializer, UserSerializer, UserFollowerSerializer, AllUsersSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,7 +20,7 @@ from datetime import datetime
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AllUsersSerializer
     permission_classes = [IsAuthenticated]
 
 
@@ -83,6 +83,16 @@ def delete_user(request):
 def edit_user(request): 
     user = request.user
     serializer = ProfileSerializer(user, request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(http_method_names=['POST'])
+def add_follower(request): 
+    user = request.user
+    serializer = UserFollowerSerializer(data={**request.data, "user": user.id})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

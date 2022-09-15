@@ -7,6 +7,15 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ["id", "username"]
+
+class AllUsersSerializer(serializers.ModelSerializer):
+    followers = serializers.SerializerMethodField()
+    class Meta:
+        model = models.User
+        fields = ["id", "username", "avatar", "followers"]
+
+    def get_followers(self, obj):
+        return FollowersSerializer(obj.user_following.all(), many=True).data
     
 class FollowersSerializer(serializers.ModelSerializer):
     # user = serializers.SerializerMethodField()
@@ -39,6 +48,11 @@ class FeedUserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = ['id', 'username', "avatar"]
 
+
+class UserFollowerSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = models.UserFollower
+        fields = ['id', 'user', "following"]
 
 
 
