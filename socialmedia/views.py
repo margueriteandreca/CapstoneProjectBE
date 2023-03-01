@@ -54,6 +54,13 @@ class CreatePost(APIView):
                         my_image.save(post=post)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, format=None):
+        post = Post.objects.get(id=request.data["id"])
+        if post: 
+            post.delete()
+        return Response(status=status.HTTP_200_OK)
+
         
 
 class LikeAPI(APIView):
